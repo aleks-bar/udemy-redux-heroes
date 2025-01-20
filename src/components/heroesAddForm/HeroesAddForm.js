@@ -10,14 +10,30 @@
 // Элементы <option></option> желательно сформировать на базе
 // данных из фильтров
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useHttp } from "../../hooks/http.hook";
 import { translater } from "../../helpers/translater";
+import { v4 as uuidv4 } from 'uuid';
 
 const HeroesAddForm = () => {
     const {request} = useHttp();
     const [filters, setFilters] = useState([])
     const {translateFilter} = translater()
+    const [name, setName] = useState('');
+    const [description, setDescription] = useState('');
+    const [element, setElement] = useState('');
+
+    const createJsonHero = (name, description, element) => {
+        return JSON.stringify({ id: uuidv4(), name, description, element })
+    }
+
+    const submit = useCallback((e) => {
+        e.preventDefault();
+        if(!!name && !!description && !!element) {
+            request("http://localhost:3001/heroes", "POST", createJsonHero(name, description, element) )
+                .then((r) => {console.log(r)})
+        }
+    }, [name, description, element])
 
     useEffect(() => {
         request("http://localhost:3001/filters")
@@ -26,7 +42,7 @@ const HeroesAddForm = () => {
     }, [])
 
     return (
-        <form className="border p-4 shadow-lg rounded">
+        <form className="border p-4 shadow-lg rounded" onSubmit={submit}>
             <div className="mb-3">
                 <label htmlFor="name" className="form-label fs-4">Имя нового героя</label>
                 <input 
@@ -35,6 +51,8 @@ const HeroesAddForm = () => {
                     name="name" 
                     className="form-control" 
                     id="name" 
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
                     placeholder="Как меня зовут?"/>
             </div>
 
@@ -46,6 +64,8 @@ const HeroesAddForm = () => {
                     className="form-control" 
                     id="text" 
                     placeholder="Что я умею?"
+                    value={description}
+                    onChange={(e) => setDescription(e.target.value)}
                     style={{"height": '130px'}}/>
             </div>
 
@@ -55,10 +75,12 @@ const HeroesAddForm = () => {
                     required
                     className="form-select" 
                     id="element" 
+                    value={element}
+                    onChange={(e) => setElement(e.target.value)}
                     name="element">
-                    <option >Я владею элементом...</option>
+                    <option value="">Я владею элементом...</option>
                     {
-                        filters.map(filter => (<option value={filter}>{translateFilter(filter)}</option>))
+                        filters.map(filter => (<option value={filter} key={filter}>{translateFilter(filter)}</option>))
                     }
                 </select>
             </div>
