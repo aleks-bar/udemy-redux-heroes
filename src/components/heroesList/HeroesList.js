@@ -1,10 +1,11 @@
 import {useHttp} from '../../hooks/http.hook';
-import { useEffect } from 'react';
+import { useCallback, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { heroesFetching, heroesFetched, heroesFetchingError } from '../../actions';
 import HeroesListItem from "../heroesListItem/HeroesListItem";
 import Spinner from '../spinner/Spinner';
+import { url } from '../../helpers/urls';
 
 // Задача для этого компонента:
 // При клике на "крестик" идет удаление персонажа из общего состояния
@@ -16,9 +17,16 @@ const HeroesList = () => {
     const dispatch = useDispatch();
     const {request} = useHttp();
 
+    const removeHero = useCallback((id) => {
+        dispatch(heroesFetching())
+        request(`${url.heroes}/${id}`, "DELETE")
+            .then(() => dispatch(heroesFetched(heroes.filter(hero => hero.id !== id))))
+            .catch(() => dispatch(heroesFetchingError()))
+    }, [heroes])
+
     useEffect(() => {
         dispatch(heroesFetching());
-        request("http://localhost:3001/heroes")
+        request(url.heroes)
             .then(data => dispatch(heroesFetched(data)))
             .catch(() => dispatch(heroesFetchingError()))
 
@@ -37,7 +45,7 @@ const HeroesList = () => {
         }
 
         return arr.map(({id, ...props}) => {
-            return <HeroesListItem key={id} {...props}/>
+            return <HeroesListItem key={id} {...props} onRemove={() => removeHero(id)}/>
         })
     }
 

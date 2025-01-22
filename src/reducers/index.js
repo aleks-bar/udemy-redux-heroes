@@ -1,26 +1,45 @@
+import { status } from "../helpers/status"
+import { reducerType } from "./reducerTypes"
+
 const initialState = {
     heroes: [],
-    heroesLoadingStatus: 'idle',
+    heroesLoadingStatus: status.idle,
     filters: []
 }
 
 const reducer = (state = initialState, action) => {
     switch (action.type) {
-        case 'HEROES_FETCHING':
+        case reducerType.HEROES_FETCHING:
             return {
                 ...state,
-                heroesLoadingStatus: 'loading'
+                heroesLoadingStatus: status.loading
             }
-        case 'HEROES_FETCHED':
+        case reducerType.HEROES_FETCHED:
             return {
                 ...state,
                 heroes: action.payload,
-                heroesLoadingStatus: 'idle'
+                heroesLoadingStatus: status.idle
             }
-        case 'HEROES_FETCHING_ERROR':
+        case reducerType.HEROES_FETCHING_ERROR:
             return {
                 ...state,
-                heroesLoadingStatus: 'error'
+                heroesLoadingStatus: status.error
+            }
+        case reducerType.FILTERS_FETCHING:
+            return {
+                ...state,
+                heroesLoadingStatus: status.loading
+            }
+        case reducerType.FILTERS_FETCHED:
+            return {
+                ...state,
+                filters: action.payload,
+                heroesLoadingStatus: status.idle
+            }
+        case reducerType.FILTERS_FETCHING_ERROR:
+            return {
+                ...state,
+                heroesLoadingStatus: status.error
             }
         default: return state
     }

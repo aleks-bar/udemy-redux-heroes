@@ -1,4 +1,6 @@
-const HeroesListItem = ({ name, description, element }) => {
+import { useCallback } from "react";
+
+const HeroesListItem = ({ name, description, element, onRemove }) => {
 	let elementClassName;
 
 	switch (element) {
@@ -17,6 +19,10 @@ const HeroesListItem = ({ name, description, element }) => {
 		default:
 			elementClassName = "bg-warning bg-gradient";
 	}
+
+	const onRemoveHandle = useCallback(() => {
+		onRemove()
+	}, [onRemove])
 
 	return (
 		<li
@@ -37,6 +43,7 @@ const HeroesListItem = ({ name, description, element }) => {
 					type="button"
 					className="btn-close btn-close"
 					aria-label="Close"
+					onClick={onRemoveHandle}
 				></button>
 			</span>
 		</li>

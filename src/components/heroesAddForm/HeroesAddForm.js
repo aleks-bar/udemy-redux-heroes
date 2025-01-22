@@ -14,32 +14,40 @@ import { useCallback, useEffect, useState } from "react";
 import { useHttp } from "../../hooks/http.hook";
 import { translater } from "../../helpers/translater";
 import { v4 as uuidv4 } from 'uuid';
+import { url } from "../../helpers/urls";
+import { useDispatch, useSelector } from "react-redux";
+import { heroesFetched, heroesFetchingError } from "../../actions";
 
 const HeroesAddForm = () => {
+    const dispatch = useDispatch()
+    const {heroes, filters} = useSelector(store => store)
     const {request} = useHttp();
-    const [filters, setFilters] = useState([])
     const {translateFilter} = translater()
     const [name, setName] = useState('');
     const [description, setDescription] = useState('');
     const [element, setElement] = useState('');
 
-    const createJsonHero = (name, description, element) => {
-        return JSON.stringify({ id: uuidv4(), name, description, element })
+    const resetData = () => {
+        setName('')
+        setDescription('')
+        setElement('')
     }
+
+    const createJsonHero = useCallback(() => {
+        return JSON.stringify({ id: uuidv4(), name, description, element })
+    }, [name, description, element])
 
     const submit = useCallback((e) => {
         e.preventDefault();
         if(!!name && !!description && !!element) {
-            request("http://localhost:3001/heroes", "POST", createJsonHero(name, description, element) )
-                .then((r) => {console.log(r)})
+            request(url.heroes, "POST", createJsonHero() )
+                .then(hero => dispatch(heroesFetched([...heroes, hero])))
+                .catch(e => dispatch(heroesFetchingError()))
+                .finally(() => {
+                    resetData()
+                })
         }
     }, [name, description, element])
-
-    useEffect(() => {
-        request("http://localhost:3001/filters")
-            .then(data => setFilters(data))
-            .catch((e) => console.log(e))
-    }, [])
 
     return (
         <form className="border p-4 shadow-lg rounded" onSubmit={submit}>

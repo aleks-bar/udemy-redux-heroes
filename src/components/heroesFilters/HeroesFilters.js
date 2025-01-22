@@ -6,7 +6,23 @@
 // Изменять json-файл для удобства МОЖНО!
 // Представьте, что вы попросили бэкенд-разработчика об этом
 
+import {useEffect} from "react"
+import { useDispatch, useSelector } from "react-redux"
+import { useHttp } from "../../hooks/http.hook";
+import { url } from "../../helpers/urls";
+import { filtersFetched } from "../../actions";
+
 const HeroesFilters = () => {
+    const {request} = useHttp();
+    const {filters} = useSelector(store => store)
+    const dispatch = useDispatch()
+
+    useEffect(() => {
+        request(url.filters)
+            .then(filtersFromBack => dispatch(filtersFetched([...filters, ...filtersFromBack])))
+            .catch((e) => console.log(e))
+    }, [])
+
     return (
         <div className="card shadow-lg mt-4">
             <div className="card-body">
