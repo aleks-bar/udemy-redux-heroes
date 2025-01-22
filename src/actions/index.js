@@ -35,3 +35,10 @@ export const filtersFetchingError = () => {
         type: 'FILTERS_FETCHING_ERROR'
     }
 }
+
+export const filtersSetActive = (activeFilter) => {
+    return {
+        type: 'FILTERS_SET_ACTIVE',
+        payload: activeFilter
+    }
+}

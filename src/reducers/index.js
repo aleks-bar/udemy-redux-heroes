@@ -4,7 +4,8 @@ import { reducerType } from "./reducerTypes"
 const initialState = {
     heroes: [],
     heroesLoadingStatus: status.idle,
-    filters: []
+    filters: [],
+    activeFilter: "all"
 }
 
 const reducer = (state = initialState, action) => {
@@ -40,6 +41,11 @@ const reducer = (state = initialState, action) => {
             return {
                 ...state,
                 heroesLoadingStatus: status.error
+            }
+        case reducerType.FILTERS_SET_ACTIVE:
+            return {
+                ...state,
+                activeFilter: action.payload
             }
         default: return state
     }
