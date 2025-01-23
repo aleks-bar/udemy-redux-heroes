@@ -13,16 +13,10 @@
       "element": "wind"
     },
     {
-      "id": 3,
-      "name": "Морской герой",
-      "description": "Как аквамен, но не из DC",
-      "element": "water"
-    },
-    {
-      "id": "47309097-7873-4cf0-8479-779715a16467",
-      "name": "123213123",
-      "description": "asdasd",
-      "element": "water"
+      "id": "9ab25ae4-ad5f-4141-85d9-d6bc5d800805",
+      "name": "Супер герой",
+      "description": "Всё",
+      "element": "all"
     }
   ],
   "filters": [

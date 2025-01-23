@@ -6,6 +6,7 @@ import { heroesFetching, heroesFetched, heroesFetchingError } from '../../action
 import HeroesListItem from "../heroesListItem/HeroesListItem";
 import Spinner from '../spinner/Spinner';
 import { url } from '../../helpers/urls';
+import { status } from '../../helpers/status';
 
 // Задача для этого компонента:
 // При клике на "крестик" идет удаление персонажа из общего состояния
@@ -17,6 +18,7 @@ const HeroesList = () => {
     const dispatch = useDispatch();
     const {request} = useHttp();
 
+    //
     const removeHero = useCallback((id) => {
         dispatch(heroesFetching())
         request(`${url.heroes}/${id}`, "DELETE")
@@ -26,16 +28,16 @@ const HeroesList = () => {
 
     useEffect(() => {
         dispatch(heroesFetching());
-        request(url.heroes)
+        request(`${url.heroes}${!!activeFilter ? "?element=" + activeFilter : ""}`)
             .then(heroes => dispatch(heroesFetched(heroes)))
             .catch(() => dispatch(heroesFetchingError()))
 
         // eslint-disable-next-line
-    }, []);
+    }, [activeFilter]);
 
-    if (heroesLoadingStatus === "loading") {
+    if (heroesLoadingStatus === status.loading) {
         return <Spinner/>;
-    } else if (heroesLoadingStatus === "error") {
+    } else if (heroesLoadingStatus === status.error) {
         return <h5 className="text-center mt-5">Ошибка загрузки</h5>
     }
 
@@ -44,7 +46,7 @@ const HeroesList = () => {
             return <h5 className="text-center mt-5">Героев пока нет</h5>
         }
 
-        return arr.filter(({element}) => element === activeFilter || activeFilter === "all").map(({id, ...props}) => {
+        return arr.map(({id, ...props}) => {
             return <HeroesListItem key={id} {...props} onRemove={() => removeHero(id)}/>
         })
     }

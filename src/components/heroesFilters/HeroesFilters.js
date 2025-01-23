@@ -19,28 +19,27 @@ const HeroesFilters = () => {
     const {translateFilter} = translater()
     const {filters, activeFilter} = useSelector(store => store)
     const dispatch = useDispatch()
+    const defaultFilter = "all"
 
     useEffect(() => {
         dispatch(filtersFetching())
         request(url.filters)
             .then(filtersFromBack => dispatch(filtersFetched([...filters, ...filtersFromBack])))
             .catch((e) => dispatch(filtersFetchingError()))
+
+        dispatch(filtersSetActive(defaultFilter))
     }, [])
 
     const getFilterClass = (element) => {
         switch (element) {
             case "fire":
                 return "btn-danger";
-                break;
             case "water":
                 return "btn-primary";
-                break;
             case "wind":
                 return "btn-success";
-                break;
             case "earth":
                 return "btn-secondary";
-                break;
             default:
                 return "btn-outline-dark";
         }
@@ -54,7 +53,7 @@ const HeroesFilters = () => {
                     {
                         filters.map(filter => {
                             return <button 
-                                        onClick={() => dispatch(filtersSetActive(filter))}
+                                        onClick={() => dispatch(filtersSetActive(activeFilter === filter ? null : filter))}
                                         key={filter}
                                         className={
                                             classNames("btn", getFilterClass(filter), activeFilter === filter && "active")
